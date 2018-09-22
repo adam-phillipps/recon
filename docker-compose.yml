@@ -2,7 +2,9 @@ version: '3.1'
 
 services:
   bot:
-    build: .
+    # image: allpps/web-recon
+    build: crawl
+    command: ruby /app/run_bot.rb
     environment:
       - SELENIUM_HOST=selenium
       - SELENIUM_PORT=4444

@@ -1,10 +1,12 @@
-FROM ruby:2.5.1-slim
+FROM ruby:2.5.1
+
+ENV LANG C.UTF-8
 
 ARG BUNDLE_PATH=/bundle
 ARG BUNDLE_BIN=/bundle/bin
 ARG GEM_HOME=/bundle
 ARG QUEUE_URL=''
-ARG APP_DIR=/app
+ARG APP_DIR=/usr/src/app
 
 # Give bots the location of the queue that holds the jobs.
 # Bundle installs with binstubs to our custom /bundle/bin volume path. Let system use those stubs.
@@ -31,3 +33,4 @@ WORKDIR ${APP_DIR}
 RUN chmod +x entrypoint.sh
 
 ENTRYPOINT ["./entrypoint.sh"]
+CMD ["ruby", "${APP_DIR}/run_bot.rb"]
