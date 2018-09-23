@@ -1,4 +1,1 @@
-*
-!run_bot.rb
-!test_helper.rb
-!entrypoint.sh
+Dockerfile

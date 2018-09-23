@@ -4,18 +4,22 @@ services:
   bot:
     # image: allpps/web-recon
     build: crawl
-    command: ruby /app/run_bot.rb
+    command:
+      - ./entrypoint.sh
+      - ruby
+      - /usr/src/app/run_bot.rb
+      - https://www.skis.com/
     environment:
+      - APP_DIR=/usr/src/app
+      - HOST=web
+      - QUEUE_URL=https://us-west-2.queue.amazonaws.com/088617881078/web-recon
       - SELENIUM_HOST=selenium
       - SELENIUM_PORT=4444
-      - TEST_APP_HOST=web
-      - TEST_PORT=3001
     volumes:
       - bundle_cache:/bundle
-      - .:/app
+      - .:/usr/src/app
     stdin_open: true
     tty: true
-
   selenium:
     image: selenium/standalone-chrome-debug:3.0.1-germanium
     logging:
