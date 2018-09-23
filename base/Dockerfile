@@ -25,7 +25,7 @@ RUN echo "deb [arch=amd64]  http://dl.google.com/linux/chrome/deb/ stable main" 
 # Ensure that our apt package list is updated and install a few
 # packages to ensure that we can compile assets (nodejs).
 RUN apt-get update && apt-get install -qq -y --no-install-recommends \
-      build-essential nodejs unzip xvfb libxi6 \
+      build-essential nodejs unzip xvfb xauth libxi6 \
       libgconf-2-4 default-jdk google-chrome-stable
 
 RUN wget https://chromedriver.storage.googleapis.com/2.42/chromedriver_linux64.zip \

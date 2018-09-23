@@ -8,7 +8,9 @@ end
 
 gem 'addressable' # (2.5.2)
 gem 'capybara' # (3.8.0)
+gem 'capybara-selenium'
 gem 'childprocess' # (0.9.0)
+gem 'chromedriver-helper'
 gem 'ffi' # (1.9.25)
 gem 'public_suffix' # (3.0.3)
 gem 'mini_mime' # (1.0.1)
