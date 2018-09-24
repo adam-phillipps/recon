@@ -1,14 +1,15 @@
-ARG LANG=C.UTF-8
-
 FROM ruby:2.5.1
 
+ARG APP_DIR=/usr/src/app
 ARG BUNDLE_PATH=/bundle
 ARG BUNDLE_BIN=/bundle/bin
 ARG GEM_HOME=/bundle
+ARG LANG=C.UTF-8
+ARG LOG_DIR=/usr/src/app/logs
+ARG LOG_PATH=/usr/src/app/logs/log
 ARG QUEUE_URL=''
-ARG APP_DIR=/usr/src/app
-ARG LOG_DIR=${APP_DIR}/logs
-ARG LOG_PATH=${LOG_DIR}/log
+ARG SELENIUM_HOST=0.0.0.0
+ARG SELENIUM_PORT=4444
 
 # Give bots the location of the queue that holds the jobs.
 # Bundle installs with binstubs to our custom /bundle/bin volume path
@@ -18,7 +19,11 @@ ENV APP_DIR=${APP_DIR} \
     BUNDLE_BIN=${BUNDLE_BIN} \
     GEM_HOME=${GEM_HOME} \
 	LANG=${LANG} \
-	QUEUE_URL=${QUEUE_URL}
+	LOG_DIR=${LOG_DIR} \
+	LOG_PATH=${LOG_PATH} \
+	QUEUE_URL=${QUEUE_URL} \
+	SELENIUM_PORT=${SELENIUM_PORT} \
+	SELENIUM_HOST=${SELENIUM_HOST}
 
 ENV PATH="${BUNDLE_BIN}:${PATH}"
 
@@ -26,16 +31,14 @@ ENV PATH="${BUNDLE_BIN}:${PATH}"
 # packages to ensure that we can compile assets (nodejs).
 RUN 		apt-get update \
 			&& apt-get install -qq -y --no-install-recommends \
-  					build-essential
+  				build-essential
 
 # Add app files into docker image
-RUN 		mkdir -p ${LOG_DIR} \
-			&& touch ${LOG_PATH} ${LOG_DIR}/errors ${LOG_DIR}/done
-WORKDIR ${APP_DIR}
+WORKDIR 	${APP_DIR}
 COPY 		* ${APP_DIR}/
 
-# Add bundle entry point to handle bundle cache
-WORKDIR 	${APP_DIR}
 RUN 		chmod +x entrypoint.sh
 
-ENTRYPOINT 	["./entrypont.sh"]
+ENTRYPOINT ["./entrypoint.sh"]
+#CMD ["/bin/bash"]
+CMD ["ruby", "run_bot.rb"]

@@ -3,7 +3,7 @@ version: '3.1'
 services:
   bot:
     # image: allpps/web-recon
-    build: crawl
+    build: web-recon
     command:
       - ruby
       - /usr/src/app/run_bot.rb
