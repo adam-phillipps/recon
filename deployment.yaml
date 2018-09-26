@@ -1,0 +1,25 @@
+apiVersion: apps/v1 # for versions before 1.9.0 use apps/v1beta2
+kind: Deployment
+metadata:
+  name: recon
+spec:
+  selector:
+    matchLabels:
+      app: recon
+  replicas: 1 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: recon
+    spec:
+      containers:
+      - name: web-recon
+        image: allpps/web-recon:latest
+        command:
+          - /usr/src/app/entrypoint.sh
+          - ruby
+          - /usr/src/app/run_bot.rb
+      - name: selenium
+        image: selenium/standalone-chrome-debug:3.0.1-germanium
+        ports:
+        - containerPort: 4444

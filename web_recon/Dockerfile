@@ -1,6 +1,9 @@
 FROM ruby:2.5.1
 
 ARG APP_DIR=/usr/src/app
+ARG AWS_ACCESS_KEY_ID=''
+ARG AWS_DEFAULT_REGION=us-west-2
+ARG AWS_SECRET_ACCESS_KEY=''
 ARG BUNDLE_PATH=/bundle
 ARG BUNDLE_BIN=/bundle/bin
 ARG GEM_HOME=/bundle
@@ -15,6 +18,9 @@ ARG SELENIUM_PORT=4444
 # Bundle installs with binstubs to our custom /bundle/bin volume path
 # Let system use those stubs.
 ENV APP_DIR=${APP_DIR} \
+	AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
+	AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} \
+	AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
 	BUNDLE_PATH=${BUNDLE_PATH} \
     BUNDLE_BIN=${BUNDLE_BIN} \
     GEM_HOME=${GEM_HOME} \
@@ -37,8 +43,10 @@ RUN 		apt-get update \
 WORKDIR 	${APP_DIR}
 COPY 		* ${APP_DIR}/
 
-RUN 		chmod +x entrypoint.sh
+RUN 		chmod +x entrypoint.sh \
+			&& chmod +x run_bot.rb \
+			&& chmod +x gunny.rb \
+			&& chmod +x web_recon.rb
 
 ENTRYPOINT ["./entrypoint.sh"]
-#CMD ["/bin/bash"]
 CMD ["ruby", "run_bot.rb"]

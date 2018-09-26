@@ -3,29 +3,34 @@ version: '3.1'
 services:
   bot:
     # image: allpps/web-recon
-    build: web-recon
+    build: web_recon
     command:
       - ruby
       - /usr/src/app/run_bot.rb
       - https://www.skis.com/
+    env_file:
+      .env
     environment:
       - APP_DIR=/usr/src/app
-      - HOST=web
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - LOG_DIR=/usr/src/app/logs
       - LOG_PATH=/usr/src/app/logs/log
       - LOG_LEVEL=DEBUG
-      - QUEUE_URL=https://us-west-2.queue.amazonaws.com/088617881078/web-recon
+      - QUEUE_URL=https://sqs.us-west-2.amazonaws.com/088617881078/web-recon
+      - RESULTS_DIR=s3://crawl-results
       - SELENIUM_HOST=selenium
       - SELENIUM_PORT=4444
     volumes:
       - bundle_cache:/bundle
-      - ./crawl:/usr/src/app
+      - ./web_recon:/usr/src/app
     stdin_open: true
     tty: true
   selenium:
     image: selenium/standalone-chrome-debug:3.0.1-germanium
-    # logging:
-    #   driver: none
+    logging:
+      driver: none
     stdin_open: true
     tty: true
     volumes:

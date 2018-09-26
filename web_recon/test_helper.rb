@@ -5,7 +5,7 @@ require 'selenium-webdriver'
 # Configure Capybara
 Capybara.default_driver = :selenium
 
-Capybara.default_max_wait_time = 1500000
+Capybara.default_max_wait_time = 60
 
 Capybara.javascript_driver = :headless_chrome
 

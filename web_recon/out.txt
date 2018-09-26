@@ -1,2 +1,0 @@
-write your stuff here 2018-09-24 15:05:24 +0000
-#<Capybara::Node::Element:0x000055f4b2f21460>

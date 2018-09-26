@@ -1,19 +1,12 @@
-require_relative './test_helper.rb'
+#!/usr/bin/ruby
+require_relative './gunny.rb'
+require_relative './web_recon.rb'
 
-# stuff as seen
-class WTFE
-  include Capybara::DSL
+if $PROGRAM_NAME == __FILE__
+  gunny = Gunny.new(ENV['QUEUE_URL'], ENV['RESULTS_DIR'])
+  agent = WebRecon.new
 
-  def initialize()
-    domain ||= 'https://www.ski.com'
-    visit(domain)
-    body = page.text
-    puts "body goes here: #{body}"
-    # File.open('out.txt', 'w') do |f|
-    #   puts "body goes here: #{body}"
-    #   f.write("write your stuff from #{queue_url} goes here #{Time.now}\n#{body}")
-    # end
-  end
+  gunny.run_recon(agent)
+else
+  puts 'Gunny loaded from another file'
 end
-
-WTFE.new
