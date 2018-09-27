@@ -1,2 +1,3 @@
 .DS*
 *.env
+.byebug_history

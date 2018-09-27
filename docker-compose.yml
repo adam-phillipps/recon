@@ -7,7 +7,6 @@ services:
     command:
       - ruby
       - /usr/src/app/run_bot.rb
-      - https://www.skis.com/
     env_file:
       .env
     environment:
@@ -19,7 +18,7 @@ services:
       - LOG_PATH=/usr/src/app/logs/log
       - LOG_LEVEL=DEBUG
       - QUEUE_URL=https://sqs.us-west-2.amazonaws.com/088617881078/web-recon
-      - RESULTS_DIR=s3://crawl-results
+      - RESULTS_DIR=smash-crawl-results
       - SELENIUM_HOST=selenium
       - SELENIUM_PORT=4444
     volumes:

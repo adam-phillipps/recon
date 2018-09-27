@@ -1,9 +1,11 @@
+require 'json'
+
 # translate a queue message into something the bots can use
 class Job
-  attr_reader :id, :data_root
+  attr_reader :id, :data_root, :receipt_handle
 
-  def initialize(body)
-    @body = body
+  def initialize(receipt_handle, body)
+    @receipt_handle = receipt_handle
     @instructions = []
     populate_i_vars(body)
   end
@@ -15,6 +17,7 @@ class Job
   def url
     domain
   end
+
   # Take the body this job was instantiated with and turn it into a package
   # that can be used by this job.
   #
@@ -32,22 +35,23 @@ class Job
   # running those instructions from; e.g. a product's PDP on various
   # competitor sites or some website's home page.
   def populate_i_vars(body)
-    if body.kind_of?(String) && body.include?(',')
-      @id, @data_root = *body.split(',')
-      @instructions = default_instructions
-    elsif body ~ /^\{.+\}$/
-      data = JSON.parse(body)
+    if (data = JSON.parse(body) rescue nil)
+      puts "ok"
       @id = data['id']
       @data_root = data['data_root']
       @instructions = data['instructions']
+    else
+      puts "confused"
+      @id, @data_root = *body.split(',')
+      @instructions = default_instructions
     end
   end
 
   def default_instructions
     [
-      { action: 'scrape_to_bag', hint: 'body' },
-      { action: 'scrape_to_bag', hint: 'click_link "about us"' },
-      { action: 'scrape_to_bag', hint: 'click_link "faq"' }
+      { action: 'scrape_to_bag', hint: 'body' } # ,
+      # { action: 'scrape_to_bag', hint: 'click_link("about us")' },
+      # { action: 'scrape_to_bag', hint: 'click_link("faq")' }
     ]
   end
 

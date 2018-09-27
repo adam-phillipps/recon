@@ -11,7 +11,7 @@ class Gunny
   end
 
   def s3
-    @s3 ||= Aws::S3::Resource.new(region: 'us-west-2')
+    @s3 ||= Aws::S3::Client.new(region: 'us-west-2')
   end
 
   def sqs
@@ -28,8 +28,8 @@ class Gunny
     begin
       job = nil # hoisting for better error messages
       msg = sqs.receive_message(opts)
-      puts "Recieved from #{queue_name}: #{msg}"
-      job = Job.new(msg)
+      puts "Recieved from #{queue_name}: #{msg.messages.first}"
+      job = Job.new(msg.messages.map(&:receipt_handle).first, msg.messages.map(&:body).first)
     rescue Aws::SQS::Errors::ServiceError => ex
       puts "Failed job: #{job} with: #{ex}"
     end
@@ -55,12 +55,14 @@ class Gunny
       job = next_job
       results = recon_bot.process(job)
       puts "Received results from recon: #{results}"
-      post_results(results)
+      post_results(job.id.to_s, results)
+      puts "Deleting queue message from successful job: #{job.id}"
+      sqs.delete_message(queue_url: @queue_url, receipt_handle: job.receipt_handle)
     end
   end
 
-  def post_results(results)
+  def post_results(file_name, results)
     puts "Posting #{results} to #{@results_dir}"
-    s3.bucket(@results_dir).object(results.id.to_s).put(results.body)
+    s3.put_object(body: results, bucket: @results_dir, key: file_name)
   end
 end
