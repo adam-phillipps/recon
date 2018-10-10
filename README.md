@@ -39,6 +39,7 @@ The different services are:
 	- The current corpus is a Wikipedia dump.  The Recon app needs to be set to
 	work against several different domains or someone needs to tell me how to google better data sets...The PageSims model will suck until it gets good documents to compare to and Wikipedia isn't so good for everything.
 - Improve the README.....
+- Contemplate harder on switching from Capybara to Twisted for the WebRecon project.
 - Create better kube orchestration
 - Create Cloud resource templates (Like Cloudformation for EC2s for a cluster, etc)
 	- AWS:
