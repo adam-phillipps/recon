@@ -1,4 +1,4 @@
-FROM ruby:2.5.1
+FROM ruby:2.5.1 as base
 
 ARG APP_DIR=/usr/src/app
 ARG AWS_ACCESS_KEY_ID=''
@@ -18,15 +18,10 @@ ARG SELENIUM_PORT=4444
 # Bundle installs with binstubs to our custom /bundle/bin volume path
 # Let system use those stubs.
 ENV APP_DIR=${APP_DIR} \
-	AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} \
-	AWS_DEFAULT_REGION=${AWS_DEFAULT_REGION} \
-	AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} \
 	BUNDLE_PATH=${BUNDLE_PATH} \
     BUNDLE_BIN=${BUNDLE_BIN} \
     GEM_HOME=${GEM_HOME} \
 	LANG=${LANG} \
-	LOG_DIR=${LOG_DIR} \
-	LOG_PATH=${LOG_PATH} \
 	QUEUE_URL=${QUEUE_URL} \
 	SELENIUM_PORT=${SELENIUM_PORT} \
 	SELENIUM_HOST=${SELENIUM_HOST}
@@ -48,5 +43,6 @@ RUN 		chmod +x entrypoint.sh \
 			&& chmod +x gunny.rb \
 			&& chmod +x web_recon.rb
 
+WORKDIR 	${APP_DIR}
 ENTRYPOINT ["./entrypoint.sh"]
 CMD ["ruby", "run_bot.rb"]

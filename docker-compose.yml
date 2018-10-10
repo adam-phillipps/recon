@@ -1,9 +1,8 @@
 version: '3.1'
-
 services:
   bot:
-    # image: allpps/web-recon
-    build: web_recon
+    image: allpps/web-recon:latest
+    # build: web_recon
     command:
       - ruby
       - /usr/src/app/run_bot.rb
@@ -34,6 +33,5 @@ services:
     tty: true
     volumes:
       - /dev/shm:/dev/shm
-
 volumes:
   bundle_cache:

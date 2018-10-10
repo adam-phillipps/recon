@@ -9,10 +9,10 @@ suited to a distributed workflow.
 - install `kubectl`
 
 		$ brew cask install minikube
-		$ brew install kubectl
+		$ brew install kubernetes-cli
 		$ git clone <this repo>
 		$ minikube start
 		$ kubectl create -f deployments.yaml
 		$ kubectl expose <kubectl get deployments result>
 
-or in pure docker, using `docker-compose` commands
+or in pure docker, using `docker-compose` commands.

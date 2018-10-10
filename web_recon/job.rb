@@ -36,12 +36,10 @@ class Job
   # competitor sites or some website's home page.
   def populate_i_vars(body)
     if (data = JSON.parse(body) rescue nil)
-      puts "ok"
       @id = data['id']
       @data_root = data['data_root']
       @instructions = data['instructions']
     else
-      puts "confused"
       @id, @data_root = *body.split(',')
       @instructions = default_instructions
     end
