@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-#
-# Licensed under the GNU LGPL v2.1 - http://www.gnu.org/licenses/lgpl.html
 import itertools
 import logging
 import os
@@ -10,8 +6,8 @@ import argparse
 import pdb
 import gensim.downloader as api
 from numpy import seterr
-from gensim.utils import save_as_line_sentence
-from gensim.corpora import MmCorpus
+# from gensim.utils import save_as_line_sentence
+from gensim.corpora import MmCorpus, Dictionary
 from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from gensim.parsing.preprocessing import preprocess_string
 
@@ -84,6 +80,9 @@ def gather_command_line_args(parser):
         help="Number of workers to distribute jobs to.  This number has a lot"
              " to do with the number of CPUs you're running.")
     parser.add_argument(
+        "--dictionary",
+        help="Mapping between words and word ids and/or documents with doc ids")
+    parser.add_argument(
         "--threads",
         type=int,
         default=3,
@@ -100,13 +99,29 @@ def gather_command_line_args(parser):
 From a raw corpus, iterate through each article, do some basic preprocessing and
 yield each sentence.
 """
-def create_iterable_corpus(raw_corpus):
-    pdb.set_trace()
-    for article in raw_corpus:
-        # concatenate all section titles and texts of each Wikipedia article into a single "sentence"
-        doc = '\n'.join(itertools.chain.from_iterable(zip(article['section_titles'], article['section_texts'])))
-        yield preprocess_string(doc)
+class TaggedDocs():
+    def __init__(self, file):
+        self.file = file
 
+    def __iter__(self):
+        for i, doc in enumerate(api.load(self.file)):
+            yield TaggedDocument(preprocess_string(doc), [i])
+
+def save_as_tagged_docs(corpus_path, docs):
+    corpus = MmCorpus(docs)
+    MmCorpus.serialize(corpus_path, corpus)
+"""
+Example of the meat of this file
+
+       raw_corpus = api.load(args.raw_url)
+       save_as_line_sentence(create_iterable_corpus(raw_corpus), args.corpus_file)
+       model = Doc2Vec(corpus_file=args.corpus_file,
+                       workers=args.workers,
+                       epoch=args.epoch,
+                       vector_size=args.vec_size)
+       model.save(args.model)
+       model.infer(["some", "text", "from", "the", "body", "of", "some", "page", "from", "the", "internet"])
+"""
 if __name__ == "__main__":
     DEFAULT_VEC_SIZE = 500
     # RAW_CORPUS_URL = 'text8'
@@ -119,30 +134,40 @@ if __name__ == "__main__":
     logging.basicConfig(format='%(asctime)s : %(threadName)s : %(levelname)s : %(message)s', level=logging.INFO)
     logger.info("running %s", " ".join(sys.argv))
 
-    seterr(all='raise') # don't ignore numpy errors
     args = gather_command_line_args(argparse.ArgumentParser())
+    seterr(all='raise') # don't ignore numpy errors
 
     if not os.path.exists(os.path.join(_curr_path, args.corpus_file)):
         if args.raw_url:
-            logger.info("Downloading raw corpus file for: ", args.raw_url)
-            raw_corpus = api.load(args.raw_url)
+            logger.info("Downloading raw corpus file for: {}".format(args.raw_url))
+            raw_corpus = args.raw_url
             logger.info("Download complete")
         elif args.raw_file:
-            logger.info("Loading corpus from: ", args.raw_file)
-            raw_corpus = api.load(args.raw_file)
+            logger.info("Loading corpus from: {}".format(args.raw_file))
+            raw_corpus = args.raw_file
             logger.info("Load complete")
 
         logger.info("Saving corpus to disk")
-        save_as_line_sentence(create_iterable_corpus(raw_corpus), args.corpus_file)
+    else:
+        raw_corpus = args.corpus_file
 
     if os.path.exists(os.path.join(os.path.dirname(__file__), args.model)):
-        logger.info("Loading existing model from: ", args.model)
-        pdb.set_trace()
+        logger.info("Loading existing model from: {}".format(args.model))
         model = Doc2Vec.load(args.model)
     else:
-        logger.info("Creating new Doc2Vec model from corpus_file: ", args.corpus_file)
-        model = Doc2Vec(corpus_file=args.corpus_file,
+        logger.info("Creating new Doc2Vec model from corpus_file: {}".format(args.corpus_file))
+        model = Doc2Vec(corpus_file=raw_corpus,
                         workers=args.workers,
                         epoch=args.epoch,
                         vector_size=args.vec_size)
+        # dictionary=Dictionary.load_from_text(args.dictionary),
+        # model.save(args.model)
         model.save(args.model)
+
+    pdb.set_trace()
+    vocab = model.build_vocab(documents=TaggedDocs(raw_corpus))
+    pdb.set_trace()
+    model.train(corpus_file=args.corpus_file)
+
+    print(model)
+

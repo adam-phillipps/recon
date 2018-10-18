@@ -142,4 +142,5 @@ left join (select pa.productVariationId
   -- and cn.productVariationId = 14250
   -- and p.baseSKU in ('p-15398')
  -- and p.productId = 16185
-order by size_lbl desc;
+order by size_lbl desc
+limit 10;
