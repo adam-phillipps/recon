@@ -1,22 +1,14 @@
 import boto3
 import json
 import os
-import mysql.connector as mc
+import mysql.connector as db
 import numpy as np
 
 
 def build_job(row):
-    job = {
-        'id': row[0],
-        'brand': row[8],
-        'description': row[6],
-        'measurement': ' '.join(map(str, row[14:]))
-    }
-    return json.dumps(job)
-
-def send_to_queue(sqs, message):
-    sqs.send_message(QueueUrl=os.getenv('BACKLOG_QUEUE'),
-                             MessageBody=message)
+    return json.dumps({
+        'id': row[0], 'brand': row[8], 'description': row[6],
+        'measurement': ' '.join(map(str, row[14:]))})
 
 # If this file called directly...
 #
@@ -30,7 +22,7 @@ if __name__ == '__main__':
                                          fname))
     with open(fpath, 'r') as fcontents:
         query = fcontents.read()
-        conn = mc.connect(host=os.getenv('DBHOST'),
+        conn = db.connect(host=os.getenv('DBHOST'),
                           user=os.getenv('DBUSER'),
                           password=os.getenv('DBPASS'),
                           database=os.getenv('DBNAME'))
@@ -39,4 +31,5 @@ if __name__ == '__main__':
         result = client.fetchall()
 
         for job in result:
-            send_to_queue(sqs, build_job(job))
+          sqs.send_message(QueueUrl=os.getenv('BACKLOG'),
+                           MessageBody=build_job(job))

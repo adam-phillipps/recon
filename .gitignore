@@ -5,4 +5,5 @@ env/
 **/pre/*
 **/results/*
 **/corpora/*
+**/__pycache__
 

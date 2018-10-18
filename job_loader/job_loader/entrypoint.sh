@@ -4,7 +4,7 @@
 set -e
 
 # install package dependencies
-python /usr/src/app/setup.py install
+python $APP_DIR/setup.py install
 
 # allow commands to pass through entrypoint from docker run
 # commands

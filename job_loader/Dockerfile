@@ -1,19 +1,25 @@
 # WIP as pseudo-code
 from python:alpine
 
-COPY ./* ${APP_DIR}
+ARG APP_DIR=/usr/src/app
+ARG BACKLOG=''
+ARG DBHOST=''
+ARG DBPASS=''
+ARG DBUSER=''
+ARG DBNAME=''
 
-ARG BACKLOG_QUEUE
-ARG DBHOST
-ARG DBPASS
-ARG DBUSER
-ARG DBNAME
-
-ENV BACKLOG_QUEUE=${BACKLOG_QUEUE} \
+ENV APP_DIR=${APP_DIR} \
+	BACKLOG=${BACKLOG} \
 	DBHOST=${DBHOST} \
 	DBPASS=${DBPASS} \
 	DBUSER=${DBUSER} \
 	DBNAME=${DBNAME}
 
-EXECUTE ["./entrypoint"]
-CMD ["python", "from_redshift.py"]
+RUN mkdir -p ${APP_DIR}/job_loader
+COPY ./ ${APP_DIR}/
+RUN chmod +x ${APP_DIR}/entrypoint.sh
+
+WORKDIR ${APP_DIR}
+ENTRYPOINT ["/bin/sh", "./entrypoint.sh"]
+CMD ["/bin/sh"]
+#CMD ["python", "job_loader/from_redshift.py"]
