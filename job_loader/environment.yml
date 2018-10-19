@@ -1,0 +1,5 @@
+name: job_loader
+dependencies:
+  - mysql-connector-python
+  - boto3
+  - numpy

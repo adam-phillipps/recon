@@ -1,4 +1,5 @@
 Dockerfile
 env
-*.env
+**/*.env
 **/__pycache__
+**/deployment.yaml

@@ -1,8 +1,8 @@
 import boto3
 import json
-import os
 import mysql.connector as db
 import numpy as np
+import os
 
 
 def build_job(row):
