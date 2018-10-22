@@ -39,6 +39,10 @@ def search(q,
            **kwargs):
     """
     Run a search and filter the response.
+
+    Keyword Arguments:
+    q -- <String> This parameter is the actual search term.
+    filters -- [<String>]
     TODO:
     Create an actual docstring...
     """

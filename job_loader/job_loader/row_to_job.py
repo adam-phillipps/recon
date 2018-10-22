@@ -3,12 +3,8 @@ import json
 import mysql.connector as db
 import numpy as np
 import os
+import conversions
 
-
-def build_job(row):
-    return json.dumps({
-        'id': row[0], 'brand': row[8], 'description': row[6],
-        'measurement': ' '.join(map(str, row[14:]))})
 
 # If this file called directly...
 #
