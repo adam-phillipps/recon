@@ -6,4 +6,7 @@ env/
 **/results/*
 **/corpora/*
 **/__pycache__
-
+**/test.py
+**/build/**
+**/dist/**
+**/*egg-info*

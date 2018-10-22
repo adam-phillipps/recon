@@ -1,42 +1,20 @@
-# Recon
+# Recon/JobLoader
 This package was created to create messages in a queue out of rows from a database.  The database is currently set up as a MySQL RDBMS but it shouldn't be hard to swap that out; Just replace the dependency on mysql and include your db client instead.
 
 ## Layout of the project
 The tree looks a bit like this:
 
 	~/code/recon $ tree -L 3
-	.
-	├── deployment.yaml
-	├── docker-compose.yml
+	├── README.md
+	├── Dockerfile # Docker
+	├── deployment.yaml # Kubernetes
+	├── environment.yml # Conda
 	├── job_loader
-	│   ├── Dockerfile
-	│   ├── environment.yml
-	│   ├── job_loader
-	│   │   ├── __init__.py
-	│   │   ├── entrypoint.sh
-	│   │   ├── query.sql
-	│   │   └── row_to_job.py
-	│   └── setup.py
-	├── pagesim
-	│   ├── Dockerfile
-	│   ├── corpora
-	│   │   └── # empty until you fill it with corpora
-	│   ├── d2v_setup.py
+	│   ├── __init__.py
 	│   ├── entrypoint.sh
-	│   ├── pre
-	│   │   ├── enwiki-20180920-pages-articles-multistream.xml.bz2 # exp, not included
-	│   │   └── # any other un-processed file that you'll process into a corpus
-	│   └── results
-	│       └── your_models_and_dictionaries_etc.py
-	└── web_recon
-	    ├── Dockerfile
-	    ├── Gemfile
-	    ├── entrypoint.sh
-	    ├── gunny.rb
-	    ├── job.rb
-	    ├── run_bot.rb
-	    ├── test_helper.rb
-	    └── wip.Dockerfile
+	│   ├── query.sql
+	│   └── row_to_job.py
+	└── setup.py # Pip
 
 ## Use
 You can run this package locally, in a Docker container or as a Kubernetes deployment (working on it).
@@ -58,11 +36,11 @@ You'll need somewhere to deploy this stuff so either Docker and Kubernetes are t
 
 ### Running in Docker
 This will start a container locally, get records from the db, create Jobs from the rows it just received and push the Jobs up to a queue.
-`docker build -t allpps/[job_loader|pagesim|web_recon] . \
+`docker build -t allpps/job_loader . \
 	&& docker run --env-file .env -it $(docker images -qa | head -n1)`
 
 ### Running in Kubernetes
 The Dockerfiles will be deployed to create Pods in a Deployment for whichever service you are attempting to deploy.  None of the services require any of the other services to be running but they do require the artifacts the other services create or modify.  This means you can deploy a few JobLoaders to process a big query and after a long Halloween vacation you can come back and run the WebRecon cluster which will use the Jobs that the JobLoader created before you left.
 
 ### Notes
-- Right now the JobLoader is using Conda and it works great but it's a bit overkill and boot times can be cut down by going back to python:alpine, if possible
+- Right now the JobLoader is using Conda and it works great but it might be a bit overkill and boot times can be cut down by going back to python:alpine, if possible
