@@ -37,14 +37,19 @@ def search(q,
            key=_lookfor('CSE_KEY'),
            cx=_lookfor('CSE_ID'),
            **kwargs):
-    """
-    Run a search and filter the response.
+    """Run a search and filter the response.
+
 
     Keyword Arguments:
     q -- <String> This parameter is the actual search term.
-    filters -- [<String>]
-    TODO:
-    Create an actual docstring...
+    filters -- [<String>] Filter the result of a search based on keys that might be included in the results
+    key -- <String> Set the Google CSE API key
+    cs -- <String> Set the Google CSE key ID
+    kwargs -- [<Keyword Arguments>] Send additional search customizations to the Google search API methos.
+
+
+    Returns:
+    [dict] with `filters` as keys of length `num`, from the params list.
     """
     intel = []
     filters = ['title', 'link'] if not filters else filters
