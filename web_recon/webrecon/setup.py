@@ -1,11 +1,10 @@
 import setuptools
-# google-api-python-client
 with open("README.md", "r") as fh:
     long_description = fh.read()
 
 setuptools.setup(
     name="webrecon",
-    version="0.0.1",
+    version="0.0.3",
     author="Adam Phillipps",
     author_email="adam.phillipps@gmail.com",
     description="Get information from various web resources",

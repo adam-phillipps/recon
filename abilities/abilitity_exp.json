@@ -1,0 +1,32 @@
+POST ability
+{
+    "name":"get_price",
+    "parameters":[
+        {"name": "tokanized_page"},
+        {"name": "price_format=USD"}
+    ],
+    "left_links": [
+    	{
+    		"http_method": "GET",
+    		"path": "/_search/ability",
+    		"query": {
+    			"match": {
+    				"return_values": {"name": "tokanize_page"}
+    			}
+    		}
+    	},
+    	{
+    		"http_method": "GET",
+    		"path": "/_search/ability",
+    		"query": {
+    			"match": {
+    				"return_values": {"name": "price_format"}
+    			}
+    		}
+    	}
+    ],
+    "return_values": [
+        {"name": "price"},
+        {"name": "price_format"}
+    ]
+}
