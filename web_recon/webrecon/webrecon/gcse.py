@@ -1,10 +1,13 @@
-import boto3
-from googleapiclient.discovery import build
 import os
 import sys
-import pdb
+from googleapiclient.discovery import build
+from webrecon import helpers, reporting
 
+
+@reporting.self_report
 def _ff(doc, *keys):
+    import pdb
+    pdb.set_trace()
     """
     Filter and Flatten based on keys
     TODO:
@@ -16,32 +19,34 @@ def _ff(doc, *keys):
     [d.update({k:doc[k]}) for k in keys if k in doc.keys()]
     return d
 
-def _lookfor(key):
+@reporting.self_report
+def search(q, *filters, key=None, cx=None, **kwargs):
     """
-    Search in the shell environment then parameter stores for the CSE API ID and
-    key
-    TODO:
-    Create an actual docstring...
-    """
-    if os.getenv(key):
-        val = os.getenv(key)
-    else:
-        ssm = boto3.client('ssm')
-        param = ssm.get_parameter(Name=key)['Parameter']
-        val = param['Value'] if 'Value' in param else ''
+    Run a scoped search and filter the response.
 
-    return val
+    Params:
+    -------
+    q : str
+        Query used to search CSE
+    filters : str
+        Terms used to limit the scope of the response
 
-def search(q,
-           *filters,
-           key=_lookfor('CSE_KEY'),
-           cx=_lookfor('CSE_ID'),
-           **kwargs):
+    Keyword Arguments:
+    ------------------
+    key : str
+        Google CSE key
+    cx : str
+        Google CSE ID
+    kwargs : Keyword Arguments
+        Key Value pairs used to limit the scope of the search
+
+    Returns:
+    --------
+    List[dict]
     """
-    Run a search and filter the response.
-    TODO:
-    Create an actual docstring...
-    """
+    key = key if key is None else helpers.lookfor('CSE_KEY')
+    cx = cx if cx is None else helpers.lookfor('CSE_ID')
+
     intel = []
     filters = ['title', 'link'] if not filters else filters
     api = build("customsearch", "v1", developerKey=key)
