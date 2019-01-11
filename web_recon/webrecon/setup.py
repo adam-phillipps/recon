@@ -15,7 +15,8 @@ setuptools.setup(
     packages=setuptools.find_packages(),
     install_requires=[
         'boto3',
-        'google-api-python-client'
+        'google-api-python-client',
+        'capybara-py'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",

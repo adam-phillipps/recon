@@ -1,10 +1,13 @@
-import boto3
-from googleapiclient.discovery import build
 import os
 import sys
-import pdb
+from googleapiclient.discovery import build
+from webrecon import helpers, reporting
 
+
+@reporting.self_report
 def _ff(doc, *keys):
+    import pdb
+    pdb.set_trace()
     """
     Filter and Flatten based on keys
     TODO:
@@ -16,41 +19,35 @@ def _ff(doc, *keys):
     [d.update({k:doc[k]}) for k in keys if k in doc.keys()]
     return d
 
-def _lookfor(key):
+
+@reporting.self_report
+def search(q, *filters, key=None, cx=None, **kwargs):
     """
-    Search in the shell environment then parameter stores for the CSE API ID and
-    key
-    TODO:
-    Create an actual docstring...
-    """
-    if os.getenv(key):
-        val = os.getenv(key)
-    else:
-        ssm = boto3.client('ssm')
-        param = ssm.get_parameter(Name=key)['Parameter']
-        val = param['Value'] if 'Value' in param else ''
+    Run a scoped search and filter the response.
 
-    return val
-
-def search(q,
-           *filters,
-           key=_lookfor('CSE_KEY'),
-           cx=_lookfor('CSE_ID'),
-           **kwargs):
-    """Run a search and filter the response.
-
+    Params:
+    -------
+    q : str
+        Query used to search CSE
+    filters : str
+        Terms used to limit the scope of the response
 
     Keyword Arguments:
-    q -- <String> This parameter is the actual search term.
-    filters -- [<String>] Filter the result of a search based on keys that might be included in the results
-    key -- <String> Set the Google CSE API key
-    cs -- <String> Set the Google CSE key ID
-    kwargs -- [<Keyword Arguments>] Send additional search customizations to the Google search API methos.
-
+    ------------------
+    key : str
+        Google CSE key
+    cx : str
+        Google CSE ID
+    kwargs : Keyword Arguments
+        Key Value pairs used to limit the scope of the search
 
     Returns:
-    [dict] with `filters` as keys of length `num`, from the params list.
+    --------
+    List[dict]
     """
+    key = key if key is None else helpers.lookfor('CSE_KEY')
+    cx = cx if cx is None else helpers.lookfor('CSE_ID')
+
     intel = []
     filters = ['title', 'link'] if not filters else filters
     api = build("customsearch", "v1", developerKey=key)
